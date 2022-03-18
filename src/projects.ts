@@ -137,6 +137,7 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
   }
 
   if (fields) {
+    core.startGroup(`Update project items`)
     const projectFields = await projectFieldsGet(projectNext.id)
     for (const [name, value] of Object.entries(fields)) {
       let _value = value;
@@ -153,6 +154,7 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
       console.log(updatedFieldId)
       core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${_value}\u001B[m (${updatedFieldId}).`)
     }
+    core.endGroup()
   }
 
   const link = `https://github.com/${user ? 'users/' + user : 'orgs/' + organization}/projects/${projectNumber}`
