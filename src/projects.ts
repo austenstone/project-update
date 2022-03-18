@@ -143,7 +143,7 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
       const field = projectFields.find((field) => name === field.name);
       if (field) {
         if (field?.settings?.configuration?.iterations) {
-          if (_value.startsWith('[')) {
+          if (_value.startsWith('[') && _value.endsWith(']')) {
             const index = parseInt(_value.slice(1, -1))
             if (!isNaN(index)) {
               _value = index.toString()
