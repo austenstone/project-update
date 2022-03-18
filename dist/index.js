@@ -170,11 +170,11 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
     }
     if (fields) {
         const projectFields = yield projectFieldsGet(projectNext.id);
-        Object.entries(fields).forEach(([name, value]) => {
+        Object.entries(fields).forEach(([name, value]) => __awaiter(void 0, void 0, void 0, function* () {
             const fieldId = projectFields.find((field) => name === field.name).id;
-            const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value);
+            const updatedFieldId = yield projectFieldUpdate(projectNext.id, itemId, fieldId, value);
             core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${value}\u001B[m (${updatedFieldId}).`);
-        });
+        }));
     }
     const link = `https://github.com/${user ? 'users/' + user : 'orgs/' + organization}/projects/${projectNumber}`;
     core.info(`✅ Successfully updated fields on project \u001b[1m${projectNext.title}\u001B[m.
