@@ -69,8 +69,8 @@ Various inputs are defined in [`action.yml`](action.yml):
 | organization | The organization that owns of the project. | _the repository owner_
 | user | The user that owns of the project. | N/A
 | **item-id** | The item Id of the issue or pull request. | N/A |
-| fields | The fields to modify. | N/A
-| fields-value | The fields values. | N/A
+| fields | CSV fields to modify. | N/A
+| fields-value | CSV fields values. | N/A
 
 If you are using a user owned project board you must provide the `user` input.<br>`${{ github.repository_owner }}` is fine if you're the owner of the repository.
 

@@ -19,10 +19,10 @@ inputs:
     description: "The user that owns the project."
     required: false
   fields:
-    description: "The fields to modify."
+    description: "CSV fields to modify."
     required: false
   fields-value:
-    description: "The fields values."
+    description: "CSV fields values."
     required: false
 runs:
   using: "node16"
