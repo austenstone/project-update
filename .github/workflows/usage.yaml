@@ -17,7 +17,7 @@ jobs:
           project-number: 5
           github-token: "${{ secrets.MY_TOKEN }}"
         id: project-add
-      - uses: austenstone/project-update@main
+      - uses: ./
         with:
           user: ${{ github.repository_owner }}
           project-number: 5
