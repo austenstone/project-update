@@ -25,6 +25,7 @@ jobs:
             }
         id: get-current-time
       - uses: ./
+        needs: [project-add, get-current-time]
         with:
           user: ${{ github.repository_owner }}
           project-number: 5
