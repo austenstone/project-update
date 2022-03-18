@@ -114,7 +114,9 @@ const run = async (): Promise<void> => {
       }`,
       headers
     })
-    return result?.updateProjectNextItemField?.projectNextItem?.id
+    const item = result?.updateProjectNextItemField?.projectNextItem;
+    item.settings = JSON.parse(item?.settings)
+    return item
   }
 
   const octokit: ClientType = github.getOctokit(token)
@@ -134,11 +136,16 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
   if (fields) {
     const projectFields = await projectFieldsGet(projectNext.id)
     for (const [name, value] of Object.entries(fields)) {
+      let _value = value;
       const field = projectFields.find((field) => name === field.name);
       console.log(field)
-      const updatedFieldId = await projectFieldUpdate(projectNext.id, itemId, field.id, value)
+      if (field?.settings?.configuration?.iterations) {
+        const itter = field.settings.configuration.iterations.find(i => i.title === value)
+        _value = itter.id
+      }
+      const updatedFieldId = await projectFieldUpdate(projectNext.id, itemId, field.id, _value)
       console.log(updatedFieldId)
-      core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${value}\u001B[m (${updatedFieldId}).`)
+      core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${_value}\u001B[m (${updatedFieldId}).`)
     }
   }
 
