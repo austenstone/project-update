@@ -77,7 +77,7 @@ If you are using a user owned project board you must provide the `user` input.<b
 ## Permissions
 Until GitHub supports permissions for projects (beta) we will need to [create a PAT(Personal Access Token)](https://github.com/settings/tokens/new?scopes=admin:org) with `admin:org` scope.
 
-Once support is added you we can utilize [Assigning permissions to jobs](https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs) and the action will default to the token `${{&nbsp;github.token&nbsp;}}`.
+Once support is added you we can utilize [Assigning permissions to jobs](https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs) and the action will default to the token `${{ github.token }}`.
 
 ```yml
 permissions:
