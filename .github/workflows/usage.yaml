@@ -11,8 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: austenstone/project-add@main
+        with:
+          user: ${{ github.repository_owner }}
+          project-number: 5
+          github-token: "${{ secrets.MY_TOKEN }}"
+        id: project-add
       - uses: ./
         with:
+          item-id: ${{ steps.project-add.outputs.id }}
           user: ${{ github.repository_owner }}
           project-number: 5
           github-token: "${{ secrets.MY_TOKEN }}"

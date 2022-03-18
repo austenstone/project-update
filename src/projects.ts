@@ -7,11 +7,7 @@ type ClientType = ReturnType<typeof github.getOctokit>
 interface Input {
   token: string
   projectNumber: number
-  node_id: string
-  type: string
-  title: string
-  issue?: WebhookPayload['issue']
-  pr?: WebhookPayload["pull_request"]
+  itemId: string
   login: string
   organization?: string
   user?: string
@@ -23,6 +19,7 @@ export function getInputs(): Input {
   ret.token = core.getInput('github-token')
   ret.projectNumber = parseInt(core.getInput('project-number'))
   if (isNaN(ret.projectNumber)) throw `No input 'projectNumber'`
+  ret.itemId = core.getInput('item-id')
   ret.organization = core.getInput('organization') || github.context.repo.owner
   ret.user = core.getInput('user')
   if (ret.organization) {
@@ -33,20 +30,6 @@ export function getInputs(): Input {
     throw `Missing input 'organization' or 'user'`
   }
   
-  if (github.context.payload.issue) {
-    ret.issue = github.context.payload.issue
-    ret.node_id = ret.issue.node_id
-    ret.type = 'issue'
-    ret.title = ret.issue.title
-  } else if (github.context.payload.pull_request) {
-    ret.pr = github.context.payload.pull_request
-    ret.node_id = ret.pr.node_id
-    ret.type = 'pull request'
-    ret.title = ret.pr.title
-  } else {
-    throw `Missing payload 'pull_request' or 'issue'`
-  }
-
   const fields = core.getInput('fields')
   const fieldsValue = core.getInput('fields-value')
   const fieldsValueArr = fieldsValue.split(',')
@@ -69,9 +52,7 @@ const run = async (): Promise<void> => {
   const {
     token,
     projectNumber,
-    node_id,
-    type,
-    title,
+    itemId,
     login,
     organization,
     user,
@@ -103,21 +84,6 @@ const run = async (): Promise<void> => {
     }
     const response: any = await octokit.graphql(query)
     return response?.organization?.projectNext || response?.user?.projectNext
-  }
-  const projectAdd = async (projectId: string, contentId: string): Promise<string> => {
-    const result: any = await octokit.graphql({
-      query: `mutation {
-        addProjectNextItem(
-          input: { projectId: "${projectId}", contentId: "${contentId}" }
-        ) {
-          projectNextItem {
-            id
-          }
-        }
-      }`,
-      headers
-    })
-    return result?.addProjectNextItem?.projectNextItem?.id
   }
   const projectFieldsGet = async (projectId: string): Promise<any> => {
     const result: any = await octokit.graphql({
@@ -170,22 +136,18 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
     return
   }
 
-  core.startGroup(`Add ${type} \u001b[1m${title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m`)
-  const itemId = await projectAdd(projectNext.id, node_id)
-  core.info(JSON.stringify(itemId, null, 2))
-  core.endGroup()
-
   if (fields) {
     const projectFields = await projectFieldsGet(projectNext.id)
     Object.entries(fields).forEach(([name, value]) => {
       const fieldId = projectFields.find((field) => name === field.name).id
       const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value)
       core.info(JSON.stringify(updatedFieldId, null, 2))
+      core.info(`✅ Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${value}\u001B[m.`)
     })
   }
 
   const link = `https://github.com/${user ? 'users/' + user : 'orgs/' + organization}/projects/${projectNumber}`
-  core.info(`✅ Successfully added ${type} \u001b[1m${title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m.
+  core.info(`✅ Successfully updated fields on project \u001b[1m${projectNext.title}\u001B[m.
 ${link}`)
 }
 
