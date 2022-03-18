@@ -17,11 +17,18 @@ jobs:
           project-number: 5
           github-token: "${{ secrets.MY_TOKEN }}"
         id: project-add
+      - uses: actions/script@v6
+        with:
+          script: |
+            return {
+              time: (new Date()).toISOString().replace(/\..*Z/g, '+00:00');
+            }
+        id: get-current-time
       - uses: ./
         with:
           user: ${{ github.repository_owner }}
           project-number: 5
           github-token: "${{ secrets.MY_TOKEN }}"
           item-id: ${{ steps.project-add.outputs.id }}
-          fields: product,priority
-          fields-value: back-end,high
+          fields: product,priority,last-run
+          fields-value: back-end,high,${{ steps.get-current-time.outputs.time }}
