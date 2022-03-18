@@ -181,18 +181,19 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
             const field = projectFields.find((field) => name === field.name);
             if (field) {
                 if ((_b = (_a = field === null || field === void 0 ? void 0 : field.settings) === null || _a === void 0 ? void 0 : _a.configuration) === null || _b === void 0 ? void 0 : _b.iterations) {
+                    let iteration;
                     if (_value.startsWith('[') && _value.endsWith(']')) {
                         const index = parseInt(_value.slice(1, -1));
                         if (!isNaN(index)) {
-                            _value = index.toString();
+                            iteration = field.settings.configuration.iterations[index];
                         }
                     }
                     else {
-                        const iteration = field.settings.configuration.iterations.find(i => i.title === value) ||
+                        iteration = field.settings.configuration.iterations.find(i => i.title === value) ||
                             field.settings.configuration.completed_iterations.find(i => i.title === value);
-                        if (iteration) {
-                            _value = iteration.id;
-                        }
+                    }
+                    if (iteration) {
+                        _value = iteration.id;
                     }
                 }
                 const updatedFieldId = yield projectFieldUpdate(projectNext.id, itemId, field.id, _value);
