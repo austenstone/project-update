@@ -115,7 +115,9 @@ const run = async (): Promise<void> => {
       headers
     })
     const item = result?.updateProjectNextItemField?.projectNextItem;
-    item.settings = JSON.parse(item?.settings)
+    if (item?.settings) {
+      item.settings = JSON.parse(item?.settings)
+    }
     return item
   }
 

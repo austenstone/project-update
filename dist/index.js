@@ -157,7 +157,9 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
             headers
         });
         const item = (_g = result === null || result === void 0 ? void 0 : result.updateProjectNextItemField) === null || _g === void 0 ? void 0 : _g.projectNextItem;
-        item.settings = JSON.parse(item === null || item === void 0 ? void 0 : item.settings);
+        if (item === null || item === void 0 ? void 0 : item.settings) {
+            item.settings = JSON.parse(item === null || item === void 0 ? void 0 : item.settings);
+        }
         return item;
     });
     const octokit = github.getOctokit(token);
