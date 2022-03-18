@@ -59,6 +59,7 @@ function getInputs() {
     ret.projectNumber = parseInt(core.getInput('project-number'));
     if (isNaN(ret.projectNumber))
         throw `No input 'projectNumber'`;
+    ret.itemId = core.getInput('item-id');
     ret.organization = core.getInput('organization') || github.context.repo.owner;
     ret.user = core.getInput('user');
     if (ret.organization) {
@@ -69,21 +70,6 @@ function getInputs() {
     }
     else {
         throw `Missing input 'organization' or 'user'`;
-    }
-    if (github.context.payload.issue) {
-        ret.issue = github.context.payload.issue;
-        ret.node_id = ret.issue.node_id;
-        ret.type = 'issue';
-        ret.title = ret.issue.title;
-    }
-    else if (github.context.payload.pull_request) {
-        ret.pr = github.context.payload.pull_request;
-        ret.node_id = ret.pr.node_id;
-        ret.type = 'pull request';
-        ret.title = ret.pr.title;
-    }
-    else {
-        throw `Missing payload 'pull_request' or 'issue'`;
     }
     const fields = core.getInput('fields');
     const fieldsValue = core.getInput('fields-value');
@@ -105,7 +91,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         return core.setFailed('No GitHub context.');
     if (!github.context.payload)
         return core.setFailed('No event. Make sure this is an issue or pr event.');
-    const { token, projectNumber, node_id, type, title, login, organization, user, fields, } = getInputs();
+    const { token, projectNumber, itemId, login, organization, user, fields, } = getInputs();
     const headers = { 'GraphQL-Features': 'projects_next_graphql', };
     const projectGet = (projectNumber, organization, user) => __awaiter(void 0, void 0, void 0, function* () {
         var _a, _b;
@@ -136,24 +122,8 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield octokit.graphql(query);
         return ((_a = response === null || response === void 0 ? void 0 : response.organization) === null || _a === void 0 ? void 0 : _a.projectNext) || ((_b = response === null || response === void 0 ? void 0 : response.user) === null || _b === void 0 ? void 0 : _b.projectNext);
     });
-    const projectAdd = (projectId, contentId) => __awaiter(void 0, void 0, void 0, function* () {
-        var _c, _d;
-        const result = yield octokit.graphql({
-            query: `mutation {
-        addProjectNextItem(
-          input: { projectId: "${projectId}", contentId: "${contentId}" }
-        ) {
-          projectNextItem {
-            id
-          }
-        }
-      }`,
-            headers
-        });
-        return (_d = (_c = result === null || result === void 0 ? void 0 : result.addProjectNextItem) === null || _c === void 0 ? void 0 : _c.projectNextItem) === null || _d === void 0 ? void 0 : _d.id;
-    });
     const projectFieldsGet = (projectId) => __awaiter(void 0, void 0, void 0, function* () {
-        var _e, _f;
+        var _c, _d;
         const result = yield octokit.graphql({
             query: `{
         node(id: "${projectId}") {
@@ -171,10 +141,10 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
             headers
         });
         console.log('result', result);
-        return (_f = (_e = result === null || result === void 0 ? void 0 : result.node) === null || _e === void 0 ? void 0 : _e.fields) === null || _f === void 0 ? void 0 : _f.nodes;
+        return (_d = (_c = result === null || result === void 0 ? void 0 : result.node) === null || _c === void 0 ? void 0 : _c.fields) === null || _d === void 0 ? void 0 : _d.nodes;
     });
     const projectFieldUpdate = (projectId, itemId, fieldId, value) => __awaiter(void 0, void 0, void 0, function* () {
-        var _g, _h;
+        var _e, _f;
         const result = yield octokit.graphql({
             query: `mutation {
         updateProjectNextItemField(
@@ -188,7 +158,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
             headers
         });
         console.log(result, null, 2);
-        return (_h = (_g = result === null || result === void 0 ? void 0 : result.updateProjectNextItemField) === null || _g === void 0 ? void 0 : _g.projectNextItem) === null || _h === void 0 ? void 0 : _h.id;
+        return (_f = (_e = result === null || result === void 0 ? void 0 : result.updateProjectNextItemField) === null || _e === void 0 ? void 0 : _e.projectNextItem) === null || _f === void 0 ? void 0 : _f.id;
     });
     const octokit = github.getOctokit(token);
     core.startGroup(`Get project number \u001b[1m${projectNumber}\u001B[m`);
@@ -201,20 +171,17 @@ Check the number of the project and that it is owned by \u001b[1m${login}\u001B[
 EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number \u001b[1m1234\u001B[m.`);
         return;
     }
-    core.startGroup(`Add ${type} \u001b[1m${title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m`);
-    const itemId = yield projectAdd(projectNext.id, node_id);
-    core.info(JSON.stringify(itemId, null, 2));
-    core.endGroup();
     if (fields) {
         const projectFields = yield projectFieldsGet(projectNext.id);
         Object.entries(fields).forEach(([name, value]) => {
             const fieldId = projectFields.find((field) => name === field.name).id;
             const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value);
             core.info(JSON.stringify(updatedFieldId, null, 2));
+            core.info(`✅ Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${value}\u001B[m.`);
         });
     }
     const link = `https://github.com/${user ? 'users/' + user : 'orgs/' + organization}/projects/${projectNumber}`;
-    core.info(`✅ Successfully added ${type} \u001b[1m${title}\u001B[m to project \u001b[1m${projectNext.title}\u001B[m.
+    core.info(`✅ Successfully updated fields on project \u001b[1m${projectNext.title}\u001B[m.
 ${link}`);
 });
 exports["default"] = run;
