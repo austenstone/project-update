@@ -180,8 +180,8 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
         for (const [name, value] of Object.entries(fields)) {
             let _value = value;
             const field = projectFields.find((field) => name === field.name);
-            console.log(field);
             if ((_b = (_a = field === null || field === void 0 ? void 0 : field.settings) === null || _a === void 0 ? void 0 : _a.configuration) === null || _b === void 0 ? void 0 : _b.iterations) {
+                console.log('find', value, field.settings.configuration.iterations);
                 const iteration = field.settings.configuration.iterations.find(i => i.title === value);
                 if (iteration) {
                     _value = iteration.id;
@@ -189,7 +189,6 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
             }
             console.log({ pid: projectNext.id, itemId, fid: field.id, _value });
             const updatedFieldId = yield projectFieldUpdate(projectNext.id, itemId, field.id, _value);
-            console.log(updatedFieldId);
             core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${_value}\u001B[m (${updatedFieldId}).`);
         }
         core.endGroup();
