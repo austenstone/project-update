@@ -1,4 +1,4 @@
-# Add Issue/PR to Project (BETA) ➕
+# Update Item Field Projects (BETA) ➕
 
 This GitHub [action](https://docs.github.com/en/actions) updates item fields on [Projects (beta)](https://github.com/features/issues).
 
