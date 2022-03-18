@@ -134,8 +134,9 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
   if (fields) {
     const projectFields = await projectFieldsGet(projectNext.id)
     for (const [name, value] of Object.entries(fields)) {
-      const fieldId = projectFields.find((field) => name === field.name).id
-      const updatedFieldId = await projectFieldUpdate(projectNext.id, itemId, fieldId, value)
+      const field = projectFields.find((field) => name === field.name);
+      console.log(field)
+      const updatedFieldId = await projectFieldUpdate(projectNext.id, itemId, field.id, value)
       console.log(updatedFieldId)
       core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${value}\u001B[m (${updatedFieldId}).`)
     }
