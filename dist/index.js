@@ -140,7 +140,10 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
       }`,
             headers
         });
-        return (_f = (_e = result === null || result === void 0 ? void 0 : result.node) === null || _e === void 0 ? void 0 : _e.fields) === null || _f === void 0 ? void 0 : _f.nodes;
+        return (_f = (_e = result === null || result === void 0 ? void 0 : result.node) === null || _e === void 0 ? void 0 : _e.fields) === null || _f === void 0 ? void 0 : _f.nodes.map((node) => {
+            node.settings = JSON.parse(node.settings);
+            return node;
+        });
     });
     const projectFieldUpdate = (projectId, itemId, fieldId, value) => __awaiter(void 0, void 0, void 0, function* () {
         var _g;
@@ -157,9 +160,6 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
             headers
         });
         const item = (_g = result === null || result === void 0 ? void 0 : result.updateProjectNextItemField) === null || _g === void 0 ? void 0 : _g.projectNextItem;
-        if (item === null || item === void 0 ? void 0 : item.settings) {
-            item.settings = JSON.parse(item === null || item === void 0 ? void 0 : item.settings);
-        }
         return item;
     });
     const octokit = github.getOctokit(token);
@@ -179,16 +179,21 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
         for (const [name, value] of Object.entries(fields)) {
             let _value = value;
             const field = projectFields.find((field) => name === field.name);
-            if ((_b = (_a = field === null || field === void 0 ? void 0 : field.settings) === null || _a === void 0 ? void 0 : _a.configuration) === null || _b === void 0 ? void 0 : _b.iterations) {
-                console.log('!!find!!', value, field.settings.configuration.iterations);
-                const iteration = field.settings.configuration.iterations.find(i => i.title === value);
-                if (iteration) {
-                    _value = iteration.id;
+            if (field) {
+                if ((_b = (_a = field === null || field === void 0 ? void 0 : field.settings) === null || _a === void 0 ? void 0 : _a.configuration) === null || _b === void 0 ? void 0 : _b.iterations) {
+                    console.log('!!find!!', value, field.settings.configuration.iterations);
+                    const iteration = field.settings.configuration.iterations.find(i => i.title === value);
+                    if (iteration) {
+                        _value = iteration.id;
+                    }
                 }
+                console.log({ projectNext, itemId, field, _value });
+                const updatedFieldId = yield projectFieldUpdate(projectNext.id, itemId, field.id, _value);
+                core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${_value}\u001B[m (${updatedFieldId}).`);
             }
-            console.log({ projectNext, itemId, field, _value });
-            const updatedFieldId = yield projectFieldUpdate(projectNext.id, itemId, field.id, _value);
-            core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${_value}\u001B[m (${updatedFieldId}).`);
+            else {
+                core.info(`❌ Failed to update field \u001b[1m${name}\u001B[m with value \u001b[1m${_value}\u001B[m.`);
+            }
         }
         core.endGroup();
     }
