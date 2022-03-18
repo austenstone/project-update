@@ -82,7 +82,6 @@ function getInputs() {
             return obj;
         }, {});
     }
-    console.log(ret);
     return ret;
 }
 exports.getInputs = getInputs;
@@ -140,7 +139,6 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
       }`,
             headers
         });
-        console.log('result', result);
         return (_d = (_c = result === null || result === void 0 ? void 0 : result.node) === null || _c === void 0 ? void 0 : _c.fields) === null || _d === void 0 ? void 0 : _d.nodes;
     });
     const projectFieldUpdate = (projectId, itemId, fieldId, value) => __awaiter(void 0, void 0, void 0, function* () {
@@ -157,7 +155,6 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
       }`,
             headers
         });
-        console.log(result, null, 2);
         return (_f = (_e = result === null || result === void 0 ? void 0 : result.updateProjectNextItemField) === null || _e === void 0 ? void 0 : _e.projectNextItem) === null || _f === void 0 ? void 0 : _f.id;
     });
     const octokit = github.getOctokit(token);
@@ -176,8 +173,7 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
         Object.entries(fields).forEach(([name, value]) => {
             const fieldId = projectFields.find((field) => name === field.name).id;
             const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value);
-            core.info(JSON.stringify(updatedFieldId, null, 2));
-            core.info(`✅ Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${value}\u001B[m.`);
+            core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${value}\u001B[m (${updatedFieldId}).`);
         });
     }
     const link = `https://github.com/${user ? 'users/' + user : 'orgs/' + organization}/projects/${projectNumber}`;

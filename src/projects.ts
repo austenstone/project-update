@@ -40,8 +40,6 @@ export function getInputs(): Input {
       return obj
     }, {})
   }
-
-  console.log(ret)
   return ret
 }
 
@@ -101,7 +99,6 @@ const run = async (): Promise<void> => {
       }`,
       headers
     })
-    console.log('result', result)
     return result?.node?.fields?.nodes
   }
   const projectFieldUpdate = async (projectId: string, itemId: string, fieldId: string, value: any): Promise<any> => {
@@ -117,7 +114,6 @@ const run = async (): Promise<void> => {
       }`,
       headers
     })
-    console.log(result, null, 2)
     return result?.updateProjectNextItemField?.projectNextItem?.id
   }
 
@@ -140,8 +136,7 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
     Object.entries(fields).forEach(([name, value]) => {
       const fieldId = projectFields.find((field) => name === field.name).id
       const updatedFieldId = projectFieldUpdate(projectNext.id, itemId, fieldId, value)
-      core.info(JSON.stringify(updatedFieldId, null, 2))
-      core.info(`✅ Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${value}\u001B[m.`)
+      core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${value}\u001B[m (${updatedFieldId}).`)
     })
   }
 
