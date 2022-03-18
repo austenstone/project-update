@@ -1,6 +1,6 @@
 # Add Issue/PR to Project (BETA) ➕
 
-This GitHub [action](https://docs.github.com/en/actions) adds issues or pull requests to a [Project (beta)](https://github.com/features/issues).
+This GitHub [action](https://docs.github.com/en/actions) updates item fields on [Projects (beta)](https://github.com/features/issues).
 
 ## Usage
 Create a workflow (eg: `.github/workflows/on-issue-pr-open.yml`). See [Creating a Workflow file](https://help.github.com/en/articles/configuring-a-workflow#creating-a-workflow-file).
@@ -17,7 +17,7 @@ If your project is part of an organization that has SAML enabled you must author
 
 #### Example: Add Issues and PRs
 ```yml
-name: "Add to Project"
+name: "Add Issue/PR to Project"
 on:
   issues:
     types: [opened]
@@ -26,12 +26,24 @@ on:
 
 jobs:
   add_to_project:
+    name: Add to Project
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: austenstone/project-add@main
         with:
+          user: ${{ github.repository_owner }}
+          project-number: 5
           github-token: "${{ secrets.MY_TOKEN }}"
-          project-number: 1234
+        id: project-add
+      - uses: ./
+        with:
+          item-id: ${{ steps.project-add.outputs.id }}
+          user: ${{ github.repository_owner }}
+          project-number: 5
+          github-token: "${{ secrets.MY_TOKEN }}"
+          fields: product,priority
+          fields-value: back-end,high
 ```
 
 ### Users
@@ -45,41 +57,18 @@ For user owned projects you must provide the `user` input in the workflow.
           project-number: 1234
 ```
 
-### Add Only Issues or Only PRs
-Modify the on event to be [`issues`](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#issues) or [`pull_request`](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request) or both. All activity types work.
-```yml
-on:
-  issues:
-    types: [opened]
-```
-#### Example: Add Issues Assigned to User
-```yml
-on:
-  issues:
-    types: [assigned]
-
-jobs:
-  add_assigned_to_project:
-    runs-on: ubuntu-latest
-    name: Add issue to project (beta)
-    steps:
-    - name: "Add issue that have been assigned to austenstone to project board"
-      uses: austenstone/project-add@v1
-      if: contains(github.event.issue.assignees.*.login, 'austenstone')
-      with:
-        github-token: ${{ secrets.MY_TOKEN }}
-        project-number: 5
-```
-
 ## Input Settings
 Various inputs are defined in [`action.yml`](action.yml):
 
 | Name | Description | Default |
 | --- | - | - |
 | **project-number** | The project number. Get this from the URL. | N/A |
+| **item-id** | The item Id of the issue or pull request. | N/A |
 | github-token | Token to use to authorize. This should be a personal access token. | ${{&nbsp;github.token&nbsp;}} |
 | organization | The organization that owns of the project. | _the repository owner_
 | user | The user that owns of the project. | N/A
+| fields | The fields to modify. | N/A
+| fields-value | The fields values. | N/A
 
 If you are using a user owned project board you must provide the `user` input.<br>`${{ github.repository_owner }}` is fine if you're the owner of the repository.
 
