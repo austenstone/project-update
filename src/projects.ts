@@ -116,7 +116,6 @@ const run = async (): Promise<void> => {
     })
     const item = result?.updateProjectNextItemField?.projectNextItem;
     if (item?.settings) {
-      console.log(item);
       item.settings = JSON.parse(item?.settings)
     }
     return item
@@ -143,13 +142,13 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
       let _value = value;
       const field = projectFields.find((field) => name === field.name);
       if (field?.settings?.configuration?.iterations) {
-        console.log('find', value, field.settings.configuration.iterations)
+        console.log('!!find!!', value, field.settings.configuration.iterations)
         const iteration = field.settings.configuration.iterations.find(i => i.title === value)
         if (iteration) {
           _value = iteration.id
         }
       }
-      console.log({ pid: projectNext.id, itemId, fid: field.id, _value })
+      console.log({ projectNext, itemId, field, _value })
       const updatedFieldId = await projectFieldUpdate(projectNext.id, itemId, field.id, _value)
       core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${_value}\u001B[m (${updatedFieldId}).`)
     }
