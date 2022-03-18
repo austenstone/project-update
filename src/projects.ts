@@ -148,6 +148,7 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
           _value = iteration.id
         }
       }
+      console.log({ pid: projectNext.id, itemId, fid: field.id, _value })
       const updatedFieldId = await projectFieldUpdate(projectNext.id, itemId, field.id, _value)
       console.log(updatedFieldId)
       core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${_value}\u001B[m (${updatedFieldId}).`)
