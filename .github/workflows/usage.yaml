@@ -19,17 +19,14 @@ jobs:
         id: project-add
       - uses: actions/script@v6
         with:
-          script: |
-            return {
-              time: (new Date()).toISOString().replace(/\..*Z/g, '+00:00')
-            }
+          script: return (new Date()).toISOString().replace(/\..*Z/g, '+00:00')
+          result-encoding: string
         id: get-current-time
       - uses: ./
-        needs: [project-add, get-current-time]
         with:
           user: ${{ github.repository_owner }}
           project-number: 5
           github-token: "${{ secrets.MY_TOKEN }}"
-          item-id: ${{ steps.project-add.outputs.id }}
+          item-id: ${{ steps.project-add.outputs.result }}
           fields: product,priority,last-run
-          fields-value: back-end,high,${{ steps.get-current-time.outputs.time }}
+          fields-value: back-end,high,${{ steps.get-current-time.outputs.result }}
