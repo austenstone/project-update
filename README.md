@@ -40,10 +40,10 @@ jobs:
         id: project-add
       - uses: ./
         with:
-          item-id: ${{ steps.project-add.outputs.id }}
           user: ${{ github.repository_owner }}
           project-number: 5
           github-token: "${{ secrets.MY_TOKEN }}"
+          item-id: ${{ steps.project-add.outputs.id }}
           fields: product,priority
           fields-value: back-end,high
 ```
@@ -65,10 +65,10 @@ Various inputs are defined in [`action.yml`](action.yml):
 | Name | Description | Default |
 | --- | - | - |
 | **project-number** | The project number. Get this from the URL. | N/A |
-| **item-id** | The item Id of the issue or pull request. | N/A |
 | github-token | Token to use to authorize. This should be a personal access token. | ${{&nbsp;github.token&nbsp;}} |
 | organization | The organization that owns of the project. | _the repository owner_
 | user | The user that owns of the project. | N/A
+| **item-id** | The item Id of the issue or pull request. | N/A |
 | fields | The fields to modify. | N/A
 | fields-value | The fields values. | N/A
 
