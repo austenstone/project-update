@@ -27,6 +27,6 @@ jobs:
           user: ${{ github.repository_owner }}
           project-number: 5
           github-token: "${{ secrets.MY_TOKEN }}"
-          item-id: ${{ steps.project-add.outputs.result }}
+          item-id: ${{ steps.project-add.outputs.id }}
           fields: product,priority,last-run
           fields-value: back-end,high,${{ steps.get-current-time.outputs.result }}
