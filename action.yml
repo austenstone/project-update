@@ -1,6 +1,10 @@
-name: "Project Add"
-description: "Add an issue or pull request to a project (beta)"
+name: "Project Update"
+description: "Update item fields for projects (beta)"
 author: "Austen Stone"
+branding:
+  icon: "edit-2"
+  color: "blue"
+
 inputs:
   project-number:
     description: "The number of the project. Get this from the URL."
@@ -24,10 +28,7 @@ inputs:
   fields-value:
     description: "CSV fields values."
     required: false
+
 runs:
   using: "node16"
   main: "dist/index.js"
-
-branding:
-  icon: "plus"
-  color: "blue"
