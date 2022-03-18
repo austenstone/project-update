@@ -116,6 +116,7 @@ const run = async (): Promise<void> => {
     })
     const item = result?.updateProjectNextItemField?.projectNextItem;
     if (item?.settings) {
+      console.log(item);
       item.settings = JSON.parse(item?.settings)
     }
     return item
