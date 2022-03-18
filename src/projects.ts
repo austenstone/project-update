@@ -136,7 +136,7 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
     for (const [name, value] of Object.entries(fields)) {
       const fieldId = projectFields.find((field) => name === field.name).id
       const updatedFieldId = await projectFieldUpdate(projectNext.id, itemId, fieldId, value)
-      console.log(updatedFieldId);
+      console.log(updatedFieldId)
       core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${value}\u001B[m (${updatedFieldId}).`)
     }
   }
