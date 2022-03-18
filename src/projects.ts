@@ -143,8 +143,10 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
       const field = projectFields.find((field) => name === field.name);
       console.log(field)
       if (field?.settings?.configuration?.iterations) {
-        const itter = field.settings.configuration.iterations.find(i => i.title === value)
-        _value = itter.id
+        const iteration = field.settings.configuration.iterations.find(i => i.title === value)
+        if (iteration) {
+          _value = iteration.id
+        }
       }
       const updatedFieldId = await projectFieldUpdate(projectNext.id, itemId, field.id, _value)
       console.log(updatedFieldId)
