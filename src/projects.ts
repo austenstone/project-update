@@ -28,7 +28,7 @@ export function getInputs(): Input {
   } else {
     throw `Missing input 'organization' or 'user'`
   }
-  
+
   const fields = core.getInput('fields')
   const fieldsValue = core.getInput('fields-value')
   const fieldsValueArr = fieldsValue.split(',')
@@ -143,9 +143,17 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
       const field = projectFields.find((field) => name === field.name);
       if (field) {
         if (field?.settings?.configuration?.iterations) {
-          const iteration = field.settings.configuration.iterations.find(i => i.title === value)
-          if (iteration) {
-            _value = iteration.id
+          if (_value.startsWith('[')) {
+            const index = parseInt(_value.slice(1, -1))
+            if (!isNaN(index)) {
+              _value = index.toString()
+            }
+          } else {
+            const iteration = field.settings.configuration.iterations.find(i => i.title === value) ||
+              field.settings.configuration.completed_iterations.find(i => i.title === value)
+            if (iteration) {
+              _value = iteration.id
+            }
           }
         }
         const updatedFieldId = await projectFieldUpdate(projectNext.id, itemId, field.id, _value)
