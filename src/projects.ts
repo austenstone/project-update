@@ -142,23 +142,38 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
       let _value = value;
       const field = projectFields.find((field) => name === field.name);
       if (field) {
-        if (field?.settings?.configuration?.iterations) {
-          let iteration;
-          if (_value.startsWith('[') && _value.endsWith(']')) {
-            const index = parseInt(_value.slice(1, -1))
-            if (!isNaN(index)) {
-              iteration = field.settings.configuration.iterations[index]
+        if (field.settings) {
+          if (field.settings.configuration?.iterations) {
+            let iteration;
+            if (_value.startsWith('[') && _value.endsWith(']')) {
+              const index = parseInt(_value.slice(1, -1))
+              if (!isNaN(index)) {
+                iteration = field.settings.configuration.iterations[index]
+              }
+            } else {
+              iteration = field.settings.configuration.iterations.find(i => i.title === value) ||
+                field.settings.configuration.completed_iterations.find(i => i.title === value)
             }
-          } else {
-            iteration = field.settings.configuration.iterations.find(i => i.title === value) ||
-              field.settings.configuration.completed_iterations.find(i => i.title === value)
-          }
-          if (iteration) {
-            _value = iteration.id
+            if (iteration) {
+              _value = iteration.id
+            }
+          } else if (field.settings.options) {
+            let option;
+            if (_value.startsWith('[') && _value.endsWith(']')) {
+              const index = parseInt(_value.slice(1, -1))
+              if (!isNaN(index)) {
+                option = field.settings.options[index]
+              }
+            } else {
+              option = field.settings.options.find(o => o.name === value)
+            }
+            if (option) {
+              _value = option.id
+            }
           }
         }
         const updatedFieldId = await projectFieldUpdate(projectNext.id, itemId, field.id, _value)
-        core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${_value}\u001B[m (${JSON.stringify(updatedFieldId, null, 2)}).`)
+        core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${_value}\u001B[m (${updatedFieldId?.id}).`)
       } else {
         core.info(`❌ Failed to update field \u001b[1m${name}\u001B[m with value \u001b[1m${_value}\u001B[m.`)
       }

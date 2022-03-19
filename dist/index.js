@@ -86,7 +86,7 @@ function getInputs() {
 }
 exports.getInputs = getInputs;
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a;
     if (!github.context)
         return core.setFailed('No GitHub context.');
     if (!github.context.payload)
@@ -94,7 +94,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
     const { token, projectNumber, itemId, login, organization, user, fields, } = getInputs();
     const headers = { 'GraphQL-Features': 'projects_next_graphql', };
     const projectGet = (projectNumber, organization, user) => __awaiter(void 0, void 0, void 0, function* () {
-        var _c, _d;
+        var _b, _c;
         let query;
         if (user) {
             query = `{
@@ -120,10 +120,10 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
             core.setFailed('No input \'organization\' or \'user\'');
         }
         const response = yield octokit.graphql(query);
-        return ((_c = response === null || response === void 0 ? void 0 : response.organization) === null || _c === void 0 ? void 0 : _c.projectNext) || ((_d = response === null || response === void 0 ? void 0 : response.user) === null || _d === void 0 ? void 0 : _d.projectNext);
+        return ((_b = response === null || response === void 0 ? void 0 : response.organization) === null || _b === void 0 ? void 0 : _b.projectNext) || ((_c = response === null || response === void 0 ? void 0 : response.user) === null || _c === void 0 ? void 0 : _c.projectNext);
     });
     const projectFieldsGet = (projectId) => __awaiter(void 0, void 0, void 0, function* () {
-        var _e, _f;
+        var _d, _e;
         const result = yield octokit.graphql({
             query: `{
         node(id: "${projectId}") {
@@ -140,13 +140,13 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
       }`,
             headers
         });
-        return (_f = (_e = result === null || result === void 0 ? void 0 : result.node) === null || _e === void 0 ? void 0 : _e.fields) === null || _f === void 0 ? void 0 : _f.nodes.map((node) => {
+        return (_e = (_d = result === null || result === void 0 ? void 0 : result.node) === null || _d === void 0 ? void 0 : _d.fields) === null || _e === void 0 ? void 0 : _e.nodes.map((node) => {
             node.settings = JSON.parse(node.settings);
             return node;
         });
     });
     const projectFieldUpdate = (projectId, itemId, fieldId, value) => __awaiter(void 0, void 0, void 0, function* () {
-        var _g;
+        var _f;
         const result = yield octokit.graphql({
             query: `mutation {
         updateProjectNextItemField(
@@ -159,7 +159,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
       }`,
             headers
         });
-        const item = (_g = result === null || result === void 0 ? void 0 : result.updateProjectNextItemField) === null || _g === void 0 ? void 0 : _g.projectNextItem;
+        const item = (_f = result === null || result === void 0 ? void 0 : result.updateProjectNextItemField) === null || _f === void 0 ? void 0 : _f.projectNextItem;
         return item;
     });
     const octokit = github.getOctokit(token);
@@ -180,24 +180,41 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
             let _value = value;
             const field = projectFields.find((field) => name === field.name);
             if (field) {
-                if ((_b = (_a = field === null || field === void 0 ? void 0 : field.settings) === null || _a === void 0 ? void 0 : _a.configuration) === null || _b === void 0 ? void 0 : _b.iterations) {
-                    let iteration;
-                    if (_value.startsWith('[') && _value.endsWith(']')) {
-                        const index = parseInt(_value.slice(1, -1));
-                        if (!isNaN(index)) {
-                            iteration = field.settings.configuration.iterations[index];
+                if (field.settings) {
+                    if ((_a = field.settings.configuration) === null || _a === void 0 ? void 0 : _a.iterations) {
+                        let iteration;
+                        if (_value.startsWith('[') && _value.endsWith(']')) {
+                            const index = parseInt(_value.slice(1, -1));
+                            if (!isNaN(index)) {
+                                iteration = field.settings.configuration.iterations[index];
+                            }
+                        }
+                        else {
+                            iteration = field.settings.configuration.iterations.find(i => i.title === value) ||
+                                field.settings.configuration.completed_iterations.find(i => i.title === value);
+                        }
+                        if (iteration) {
+                            _value = iteration.id;
                         }
                     }
-                    else {
-                        iteration = field.settings.configuration.iterations.find(i => i.title === value) ||
-                            field.settings.configuration.completed_iterations.find(i => i.title === value);
-                    }
-                    if (iteration) {
-                        _value = iteration.id;
+                    else if (field.settings.options) {
+                        let option;
+                        if (_value.startsWith('[') && _value.endsWith(']')) {
+                            const index = parseInt(_value.slice(1, -1));
+                            if (!isNaN(index)) {
+                                option = field.settings.options[index];
+                            }
+                        }
+                        else {
+                            option = field.settings.options.find(o => o.name === value);
+                        }
+                        if (option) {
+                            _value = option.id;
+                        }
                     }
                 }
                 const updatedFieldId = yield projectFieldUpdate(projectNext.id, itemId, field.id, _value);
-                core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${_value}\u001B[m (${JSON.stringify(updatedFieldId, null, 2)}).`);
+                core.info(`🟢 Successfully updated field \u001b[1m${name}\u001B[m with value \u001b[1m${_value}\u001B[m (${updatedFieldId === null || updatedFieldId === void 0 ? void 0 : updatedFieldId.id}).`);
             }
             else {
                 core.info(`❌ Failed to update field \u001b[1m${name}\u001B[m with value \u001b[1m${_value}\u001B[m.`);
