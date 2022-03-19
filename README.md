@@ -4,6 +4,13 @@ This GitHub [action](https://docs.github.com/en/actions) updates item fields on 
 
 The action is great to use in combination with [project-add](https://github.com/austenstone/project-add) as you will need to obtain the `item-id` to update it's field.
 
+##### Field Types Support
+- Text
+- Number
+- Date
+- Single select
+- Iteration
+
 ## Usage
 Create a workflow (eg: `.github/workflows/on-issue-pr-open.yml`). See [Creating a Workflow file](https://help.github.com/en/articles/configuring-a-workflow#creating-a-workflow-file).
 
