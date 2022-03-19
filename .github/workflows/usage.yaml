@@ -29,4 +29,4 @@ jobs:
           github-token: "${{ secrets.MY_TOKEN }}"
           item-id: ${{ steps.project-add.outputs.id }}
           fields: Status,product,priority,last-run,Iteration,Option,Number
-          fields-value: todo,back-end,high,${{ steps.get-current-time.outputs.result }},[0],Option1 ⭐,999
+          fields-value: Todo,back-end,high,${{ steps.get-current-time.outputs.result }},[0],Option1 ⭐,999
