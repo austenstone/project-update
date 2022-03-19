@@ -193,8 +193,8 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
                         }
                     }
                     else {
-                        iteration = field.settings.configuration.iterations.find(i => i.title === value) ||
-                            field.settings.configuration.completed_iterations.find(i => i.title === value);
+                        iteration = field.settings.configuration.iterations.find(i => i.title.toLowerCase() === value.toLowerCase()) ||
+                            field.settings.configuration.completed_iterations.find(i => i.title.toLowerCase() === value.toLowerCase());
                     }
                     if (iteration) {
                         _value = iteration.id;
@@ -209,7 +209,7 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
                         }
                     }
                     else {
-                        option = field.settings.options.find(o => o.name === value);
+                        option = field.settings.options.find(o => o.name.toLowerCase() === value.toLowerCase());
                     }
                     if (option) {
                         _value = option.id;
