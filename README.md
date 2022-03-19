@@ -2,14 +2,25 @@
 
 This GitHub [action](https://docs.github.com/en/actions) updates item fields on [Projects (beta)](https://github.com/features/issues).
 
-The action is great to use in combination with [project-add](https://github.com/austenstone/project-add) as you will need to obtain the `item-id` to update it's field.
+The action is great to use in combination with [project-add](https://github.com/austenstone/project-add) as you will need to obtain the `item-id` to update an item's field.
 
-##### Field Types Support
+#### Field Type Support
 - Text
 - Number
 - Date
 - Single select
 - Iteration
+
+`field-names` are supplied as a CSV list of names.
+```yml
+          field-names: Status,Iteration,product,priority
+```
+`field-values` are supplied as a CSV list of corresponding values. 
+
+```yml
+          field-values: todo,[0],back-end,high
+```
+Options and iterations are matched by the name(case-insensitive). You can also use an array index notation. For example `[0]` would be the first option or iteration. The first iteration is always the current one.
 
 ## Usage
 Create a workflow (eg: `.github/workflows/on-issue-pr-open.yml`). See [Creating a Workflow file](https://help.github.com/en/articles/configuring-a-workflow#creating-a-workflow-file).
@@ -51,8 +62,8 @@ jobs:
           project-number: 5
           github-token: "${{ secrets.MY_TOKEN }}"
           item-id: ${{ steps.project-add.outputs.id }}
-          fields: product,priority
-          fields-value: back-end,high
+          field-names: product,priority
+          field-values: back-end,high
 ```
 
 ### Users
@@ -76,8 +87,8 @@ Various inputs are defined in [`action.yml`](action.yml):
 | organization | The organization that owns of the project. | _the repository owner_
 | user | The user that owns of the project. | N/A
 | **item-id** | The item Id of the issue or pull request. | N/A |
-| fields | CSV fields to modify. | N/A
-| fields-value | CSV fields values. | N/A
+| field-names | CSV fields to modify. | N/A
+| field-values | CSV fields values. | N/A
 
 If you are using a user owned project board you must provide the `user` input.<br>`${{ github.repository_owner }}` is fine if you're the owner of the repository.
 

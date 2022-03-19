@@ -22,10 +22,10 @@ inputs:
   user:
     description: "The user that owns the project."
     required: false
-  fields:
-    description: "CSV fields to modify."
+  field-names:
+    description: "CSV fields names to update."
     required: false
-  fields-value:
+  field-values:
     description: "CSV fields values."
     required: false
 

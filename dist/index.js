@@ -71,11 +71,11 @@ function getInputs() {
     else {
         throw `Missing input 'organization' or 'user'`;
     }
-    const fields = core.getInput('fields');
-    const fieldsValue = core.getInput('fields-value');
+    const fieldNames = core.getInput('field-names');
+    const fieldsValue = core.getInput('field-values');
     const fieldsValueArr = fieldsValue.split(',');
-    if (fields) {
-        ret.fields = fields.split(',').reduce((obj, f, i) => {
+    if (fieldNames) {
+        ret.fields = fieldNames.split(',').reduce((obj, f, i) => {
             if (fieldsValueArr[i]) {
                 obj[f] = fieldsValueArr[i];
             }
@@ -186,8 +186,8 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
             if (field.settings) {
                 if ((_a = field.settings.configuration) === null || _a === void 0 ? void 0 : _a.iterations) {
                     let iteration;
-                    if (_value.startsWith('[') && _value.endsWith(']')) {
-                        const index = parseInt(_value.slice(1, -1));
+                    if (value.startsWith('[') && value.endsWith(']')) {
+                        const index = parseInt(value.slice(1, -1));
                         if (!isNaN(index)) {
                             iteration = field.settings.configuration.iterations[index];
                         }
@@ -202,8 +202,8 @@ EX: \u001b[1mhttps://github.com/orgs/github/projects/1234\u001B[m has the number
                 }
                 else if (field.settings.options) {
                     let option;
-                    if (_value.startsWith('[') && _value.endsWith(']')) {
-                        const index = parseInt(_value.slice(1, -1));
+                    if (value.startsWith('[') && value.endsWith(']')) {
+                        const index = parseInt(value.slice(1, -1));
                         if (!isNaN(index)) {
                             option = field.settings.options[index];
                         }
