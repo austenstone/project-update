@@ -28,5 +28,5 @@ jobs:
           project-number: 5
           github-token: "${{ secrets.MY_TOKEN }}"
           item-id: ${{ steps.project-add.outputs.id }}
-          fields: Title,Status,product,priority,last-run,Iteration,Option,Number
-          fields-value: Hello World!,todo,back-end,high,${{ steps.get-current-time.outputs.result }},[0],Option1 ⭐,999
+          fields: Status,product,priority,last-run,Iteration,Option,Number
+          fields-value: todo,back-end,high,${{ steps.get-current-time.outputs.result }},[0],Option1 ⭐,999
